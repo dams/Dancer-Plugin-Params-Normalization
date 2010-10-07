@@ -33,15 +33,16 @@ my $normalization_fonction = $void;
 if (defined $conf->{method}) {
     if (defined $conf->{params_filter}) {
         my $re = $conf->{params_filter};
-        $params_filter = sub { scalar($_[0] =~ /$re/) }
+        $params_filter = sub { scalar($_[0] =~ /$re/) };
     }
 
+	my $method;
     if      ($conf->{method} eq 'lowercase') {
-        $method = sub { my ($h) = @_; $apply_on_keys($h, sub { lowercase($_[0]) } ) };
+        $method = sub { my ($h) = @_; $apply_on_keys->($h, sub { lc($_[0]) } ) };
     } elsif ($conf->{method} eq 'uppercase') {
-        $method = sub { my ($h) = @_; $apply_on_keys($h, sub { uppercase($_[0]) } ) };
+        $method = sub { my ($h) = @_; $apply_on_keys->($h, sub { uc($_[0]) } ) };
     } elsif ($conf->{method} eq 'ucfirst') {
-        $method = sub { my ($h) = @_; $apply_on_keys($h, sub { ucfirst($_[0]) } ) };
+        $method = sub { my ($h) = @_; $apply_on_keys->($h, sub { ucfirst($_[0]) } ) };
     } else {
         my $class = $conf->{method};
         eval("require $class");
@@ -59,12 +60,12 @@ if (defined $conf->{method}) {
 
     my $routes_filter = $void;
     if (defined $conf->{routes_filter}) {
-        $route_filter = sub { }
+        $routes_filter = sub { };
     }
 
     # TODO : implement route filtering
 
-    $_normalization_fonction = sub { 
+    $normalization_fonction = sub { 
         request->_set_query_params($method->(params('query')));
         request->_set_body_params($method->(params('body')));
         request->_set_route_params($method->(params('route')));
@@ -75,7 +76,7 @@ if (defined $conf->{general_rule}) {
     $conf->{general_rule} =~ /^always$|^ondemand$/
       or die 'configuration field general_rule must be one of : always, ondemand';      
     if ($conf->{general_rule} eq 'ondemand') {
-        register normalize => $_normalization_fonction;
+        register normalize => sub{ $normalization_fonction->() };
     } else {
         before $normalization_fonction;
     }
