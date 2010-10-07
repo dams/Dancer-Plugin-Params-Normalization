@@ -1,0 +1,3 @@
+
+Version 0.1
+	* Support for lowercase, uppercase and generic transformation (via aclosure)
