@@ -11,7 +11,7 @@ my $conf = plugin_setting;
 my $void = sub(){};
 
 # method that loops on a hashref and apply a given method on its keys
-my $params_filter = $void;
+my $params_filter = sub () { 1; };
 my $apply_on_keys = sub {
     my ($h, $func) = @_;
     my $new_h = {};
@@ -26,8 +26,6 @@ my $apply_on_keys = sub {
     return $new_h;
 };
                           
-    
-
 # default normalization method is passthrough (do nothing)
 my $normalization_fonction = $void;
 if (defined $conf->{method}) {
@@ -60,15 +58,18 @@ if (defined $conf->{method}) {
 
     my $routes_filter = $void;
     if (defined $conf->{routes_filter}) {
+		# TODO : implement route filtering
         $routes_filter = sub { };
     }
 
-    # TODO : implement route filtering
-
     $normalization_fonction = sub { 
-        request->_set_query_params($method->(params('query')));
-        request->_set_body_params($method->(params('body')));
-        request->_set_route_params($method->(params('route')));
+        my ($new_query_params,
+            $new_body_params,
+            $new_route_params) = map { $method->(scalar(params($_))) } qw(query body route);
+        request->{params} = {};
+        request->_set_query_params($new_query_params);
+        request->_set_body_params($new_body_params);
+        request->_set_route_params($new_route_params);
     };
 }
 
@@ -83,7 +84,6 @@ if (defined $conf->{general_rule}) {
 } else {
     before $normalization_fonction;
 }
-
 
 register_plugin;
 
