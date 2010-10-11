@@ -1,4 +1,5 @@
 package Dancer::Plugin::Params::Normalization;
+
 use Dancer ':syntax';
 use Dancer::Plugin;
 
@@ -10,30 +11,31 @@ my $conf = plugin_setting;
 # method that does nothing. It's optimized to nothing at compile time
 my $void = sub(){};
 
-# method that loops on a hashref and apply a given method on its keys
+# set the params_filter
 my $params_filter = sub () { 1; };
+if (defined $conf->{params_filter}) {
+    my $re = $conf->{params_filter};
+    $params_filter = sub {
+        return scalar($_[0] =~ /$re/) };
+}
+
+# method that loops on a hashref and apply a given method on its keys
 my $apply_on_keys = sub {
     my ($h, $func) = @_;
     my $new_h = {};
     while (my ($k, $v) = each (%$h)) {
-        $params_filter->($k)
-          or next;
-        my $new_k = $func->($k);
+        my $new_k = $params_filter->($k) ? $func->($k) : $k;
         exists $new_h->{$new_k} && ! ($conf->{no_conflict_warn} || 0)
           and warn "paramater names conflict while doing normalization of parameters '$k' : it produces '$new_k', which alreay exists.";
         $new_h->{$new_k} = $v;
     }
     return $new_h;
 };
-                          
+
+
 # default normalization method is passthrough (do nothing)
 my $normalization_fonction = $void;
-if (defined $conf->{method}) {
-    if (defined $conf->{params_filter}) {
-        my $re = $conf->{params_filter};
-        $params_filter = sub { scalar($_[0] =~ /$re/) };
-    }
-
+if (defined $conf->{method} && $conf->{method} ne 'passthrough') {
 	my $method;
     if      ($conf->{method} eq 'lowercase') {
         $method = sub { my ($h) = @_; $apply_on_keys->($h, sub { lc($_[0]) } ) };
@@ -56,17 +58,31 @@ if (defined $conf->{method}) {
         $method = sub { $instance->normalize($_[0]) };
     }
 
-    my $routes_filter = $void;
-    if (defined $conf->{routes_filter}) {
-		# TODO : implement route filtering
-        $routes_filter = sub { };
-    }
+    my $params_types = $conf->{params_types};
+    # default value
+    defined $params_types
+      or $params_types = [ qw(query body) ];
+    ref $params_types eq 'ARRAY'
+      or die "configuration field 'params_types' should be an array";
+
+    my %params_types = map { $_ => 1 } @$params_types;
+    my $params_type_query = delete $params_types{query};
+    my $params_type_body = delete $params_types{body};
+    my $params_type_route = delete $params_types{route};
+    keys %params_types
+      and die "your configuration contains '" . join(', ', keys %params_types) .
+        "' as 'params_types' field(s), but only these ar allowed : 'query', 'body', 'route'";
 
     $normalization_fonction = sub { 
         my ($new_query_params,
             $new_body_params,
-            $new_route_params) = map { $method->(scalar(params($_))) } qw(query body route);
+            $new_route_params) = map { scalar(params($_)) } qw(query body route);
+        $params_type_query and $new_query_params = $method->($new_query_params);
+        $params_type_body and $new_body_params = $method->($new_body_params);
+        $params_type_route and $new_route_params = $method->($new_route_params);
+
         request->{params} = {};
+
         request->_set_query_params($new_query_params);
         request->_set_body_params($new_body_params);
         request->_set_route_params($new_route_params);
@@ -125,16 +141,15 @@ This plugin helps you normalize the query parameters in Dancer.
 The behaviour of this plugin is primarily setup in the configuration file, in
 your main config.yml or environment config file.
 
-  # Example 1 : always lowercase all parameters from all routes
+  # Example 1 : always lowercase all parameters
   plugins:
     Params::Normalization:
       method: lowercase
 
-  # Example 1 : always uppercase all parameters from routes starting with /Admin/
+  # Example 1 : always uppercase all parameters
   plugins:
     Params::Normalization:
       method: uppercase
-      routes_filter: ^/Admin/
 
   # Example 1 : on-demand uppercase parameters that match [aA]
   plugins:
@@ -155,12 +170,12 @@ Value can be of:
 
 =item always
 
-Parameters from the routes matching the filter (see below) will
+Parameters will be normalized behind the scene, automatically.
 
 =item ondemand
 
 Parameters are not normalized by default. The code in the route definition
-needs to call normalize_params to have the parameters normalized =head1
+needs to call normalize_params to have the parameters normalized
 
 =back
 
@@ -207,12 +222,30 @@ change the code
 
 B<Default value>: C<passthrough>
 
-=head2 routes_filter
+=head2 params_types
 
-Optional, used to filters which routes the normalization should apply to.
+Optional, used to specify on which parameters types the normalization should
+apply. The value is an array, that can contain any combination of these
+strings:
 
-The value is a regexp string that will be evaluated against the route names.
+=over
 
+=item query
+
+If present in the array, the parameters from the query string will be normalized
+
+=item body
+
+If present in the array, the parameters from the request's body will be normalized
+
+=item route
+
+If present in the array, the parameters from the route definition will be normalized
+
+=back
+
+B<Default value>: [ 'query', 'body']
+ 
 =head2 params_filter
 
 Optional, used to filters which parameters the normalization should apply to.
@@ -237,6 +270,8 @@ then be used to normalize the parameters on demand.
 All you have to do is add 
 
   normalize;
+
+to your route code
 
 =head1 PARAMETERS NAMES CONFLICT
 
