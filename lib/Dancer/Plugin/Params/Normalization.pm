@@ -4,7 +4,7 @@ use Dancer ':syntax';
 use Dancer::Plugin;
 
 our $AUTHORITY = 'DAMS';
-our $VERSION = '0.1';
+our $VERSION = '0.2';
 
 my $conf = plugin_setting;
 
@@ -114,23 +114,27 @@ Dancer::Plugin::Params::Normalization - A plugin for normalizing query parameter
 
 =head1 SYNOPSYS
 
-    package MyWebService;
+In configuration file :
 
-    use Dancer;
-    use Dancer::Plugin::Params::Normalization;
+  plugins:
+    Params::Normalization:
+      method: lowercase
 
-    get '/user/:name' => sub {
-        'Hello ' . params->{name};
-    };
+In your Dancer App :
 
-    # curl http://mywebservice/user/42.json
-    { "id": 42, "name": "John Foo", email: "jhon.foo@example.com"}
+  package MyWebService;
 
-    # curl http://mywebservice/user/42.yml
-    --
-    id: 42
-    name: "John Foo"
-    email: "jhon.foo@example.com"
+  use Dancer;
+  use Dancer::Plugin::Params::Normalization;
+
+  get '/hello' => sub {
+      'Hello ' . params->{name};
+  };
+
+Requests 
+
+  # This will work, as NAME will be lowercased to name
+  curl http://mywebservice/test?NAME=John
 
 =head1 DESCRIPTION
 
@@ -151,12 +155,12 @@ your main config.yml or environment config file.
     Params::Normalization:
       method: uppercase
 
-  # Example 1 : on-demand uppercase parameters that match [aA]
+  # Example 1 : on-demand uppercase parameters that starts with 'a'
   plugins:
     Params::Normalization:
       general_rule: ondemand
       method: uppercase
-      params_filter: [aA]
+      params_filter: ^[aA]
 
 Here is a list of configuration fields:
 
