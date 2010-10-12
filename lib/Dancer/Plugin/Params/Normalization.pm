@@ -4,7 +4,7 @@ use Dancer ':syntax';
 use Dancer::Plugin;
 
 our $AUTHORITY = 'DAMS';
-our $VERSION = '0.2';
+our $VERSION = '0.3';
 
 my $conf = plugin_setting;
 
