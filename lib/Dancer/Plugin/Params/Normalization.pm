@@ -45,8 +45,13 @@ if (defined $conf->{method} && $conf->{method} ne 'passthrough') {
         $method = sub { my ($h) = @_; $apply_on_keys->($h, sub { ucfirst($_[0]) } ) };
     } else {
         my $class = $conf->{method};
-        eval("require $class");
-        $@ and die "error while requiring custom normalization class '$class' : $@";
+        my $class_name = $class;
+        $class_name =~ s!::|'!/!g;
+        $class_name .= '.pm';
+        if ( ! $class->can('new') ) {
+            eval { require $class_name };
+            $@ and die "error while requiring custom normalization class '$class' : $@";
+        }
         my $abstract_classname = __PACKAGE__ . '::Abstract';
         $class->isa(__PACKAGE__ . '::Abstract')
           or die "custom normalization class '$class' doesn't inherit from '$abstract_classname'";
