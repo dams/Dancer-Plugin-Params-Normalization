@@ -4,4 +4,6 @@ Version 0.1
 Version 0.2
 	* Documentation fix
 Version 0.3
-	* minor fix (changelog up-to-date)
+	* Minor fix (changelog up-to-date)
+Version 0.4
+	* Implement custom normalization
