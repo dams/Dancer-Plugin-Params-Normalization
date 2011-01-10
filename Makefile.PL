@@ -8,7 +8,7 @@ WriteMakefile1(
     
     META_MERGE => {
         resources => {
-            repository => 'http://github.com/sukria/Dancer-Plugin-Params-Normalization',
+            repository => 'http://github.com/dams/Dancer-Plugin-Params-Normalization',
         },
     },
 
