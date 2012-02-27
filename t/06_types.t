@@ -1,7 +1,8 @@
 use strict;
 use warnings;
-use lib qw(../lib);
+
 use Test::More;
+use Dancer::Test;
 
 plan tests => 2;
 
@@ -26,14 +27,12 @@ plan tests => 2;
     };
 }
 
-use lib 't';
-use TestUtils;
-
 # only route params are lowercase'd
-my $response = get_response_for_request(GET => '/foo/test', { TEST => 5 });
+my $response = dancer_response GET => '/foo/test', { params => {TEST => 5 } };
 ok(! length $response->{content});
 
+
 # route param (:NAME) is lowercased to 'name', and returns 'plop'
-$response = get_response_for_request(GET => '/foo/plop', { plop => 5});
+$response = dancer_response GET => '/foo/plop', { params => { plop => 5 } };
 is($response->{content}, 5);
 

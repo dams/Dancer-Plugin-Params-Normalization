@@ -1,10 +1,9 @@
 package Dancer::Plugin::Params::Normalization;
 
+# ABSTRACT: A plugin for normalizing query parameters in Dancer
+
 use Dancer ':syntax';
 use Dancer::Plugin;
-
-our $AUTHORITY = 'DAMS';
-our $VERSION = '0.4';
 
 my $conf = plugin_setting;
 
@@ -100,10 +99,10 @@ if (defined $conf->{general_rule}) {
     if ($conf->{general_rule} eq 'ondemand') {
         register normalize => sub{ $normalization_fonction->() };
     } else {
-        before $normalization_fonction;
+        hook before => $normalization_fonction;
     }
 } else {
-    before $normalization_fonction;
+    hook before => $normalization_fonction;
 }
 
 register_plugin;
@@ -112,10 +111,6 @@ register_plugin;
 __END__
 
 =pod
-
-=head1 NAME
-
-Dancer::Plugin::Params::Normalization - A plugin for normalizing query parameters in Dancer.
 
 =head1 SYNOPSYS
 
@@ -289,14 +284,6 @@ while lowercasing parameters the route receives two params : C<param> and
 C<Param>, they will be both normalized to C<param>, which leads to a conflict.
 You can avoid the warning being issued by adding the configuration key
 C<no_conflict_warn> to a true value.
-
-=head1 LICENCE
-
-This module is released under the same terms as Perl itself.
-
-=head1 AUTHORS
-
-This module has been written by Damien Krotkine <dams@cpan.org>.
 
 =head1 SEE ALSO
 

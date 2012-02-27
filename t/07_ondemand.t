@@ -1,7 +1,8 @@
 use strict;
 use warnings;
-use lib qw(../lib);
+
 use Test::More;
+use Dancer::Test;
 
 plan tests => 2;
 
@@ -33,14 +34,11 @@ plan tests => 2;
 
 }
 
-use lib 't';
-use TestUtils;
-
 # this route doesn't do parameters normalization
-my $response = get_response_for_request(GET => '/foo', { TEST => 5 });
+my $response = dancer_response GET => '/foo', { params => {TEST => 5 } };
 ok(! length $response->{content});
 
 # this route does parameters normalization
-$response = get_response_for_request(GET => '/bar', { TEST => 5});
+$response = dancer_response GET => '/bar', { params => {TEST => 5 } };
 is($response->{content}, 5);
 

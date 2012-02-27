@@ -1,7 +1,8 @@
 use strict;
 use warnings;
-use lib qw(../lib);
+
 use Test::More;
+use Dancer::Test;
 
 plan tests => 1;
 
@@ -23,8 +24,5 @@ plan tests => 1;
     };
 }
 
-use lib 't';
-use TestUtils;
-
-my $response = get_response_for_request(GET => '/foo', { teSt => 5 });
+my $response = dancer_response GET => '/foo', { params => {teSt => 5 } };
 is($response->{content}, 5);

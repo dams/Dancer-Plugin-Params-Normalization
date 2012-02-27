@@ -1,7 +1,8 @@
 use strict;
 use warnings;
-use lib qw(../lib);
+
 use Test::More;
+use Dancer::Test;
 
 plan tests => 2;
 
@@ -24,14 +25,11 @@ plan tests => 2;
     };
 }
 
-use lib 't';
-use TestUtils;
-
 # param filter regexp doesn't match, thus the param is no lowercased
-my $response = get_response_for_request(GET => '/foo/test', { TEST => 5 });
+my $response = dancer_response GET => '/foo/test', { params => {TEST => 5 } };
 ok(! length $response->{content});
 
 # param filter regexp matches, thus the param is no lowercased
-$response = get_response_for_request(GET => '/foo/mytest', { MYTEST => 5 });
+$response = dancer_response GET => '/foo/mytest', { params => {MYTEST => 5 } };
 is($response->{content}, 5);
 

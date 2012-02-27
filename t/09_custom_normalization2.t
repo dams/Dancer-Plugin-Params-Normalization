@@ -1,8 +1,11 @@
 use strict;
 use warnings;
-use lib qw(../lib);
+
+use FindBin;
+use lib "$FindBin::Bin/../t";
+
 use Test::More;
-use lib 't';
+use Dancer::Test;
 
 plan tests => 2;
 
@@ -32,12 +35,10 @@ plan tests => 2;
 
 }
 
-use TestUtils;
-
 # 'testing' should be shortened to 'ing'
-my $response = get_response_for_request(GET => '/foo', { testing => 5 });
+my $response = dancer_response GET => '/foo', { params => {testing => 5 } };
 is($response->{content}, 5);
 
 # 'ABCLONGNAME' should be shortened to 'AME'
-$response = get_response_for_request(GET => '/bar', { ABCLONGNAME => 6});
+$response = dancer_response GET => '/bar', { params => { ABCLONGNAME => 6 } };
 is($response->{content}, 6);

@@ -2,6 +2,8 @@ package Dancer::Plugin::Params::Normalization::Abstract;
 use strict;
 use warnings;
 
+# ABSTRACT: class for custom parameters normalization
+
 use base 'Dancer::Engine';
 
 # args: ($class)
@@ -28,7 +30,7 @@ __END__
 
 =head1 NAME
 
-L<Dancer::Plugin::Params::Normalization::Abstract> - abstract class for custom parameters normalization
+Dancer::Plugin::Params::Normalization::Abstract - abstract class for custom parameters normalization
 
 =head1 DESCRIPTION
 
@@ -37,36 +39,24 @@ L<Dancer::Plugin::Params::Normalization>. This is done in order to allow
 custom transformation of the parameters with a common interface.
 
 Any custom normalization package must inherits from
-L<Dancer::Plugin::Params::Normalization::Abstract> and implement the following
+Dancer::Plugin::Params::Normalization::Abstract and implement the following
 abstract methods.
 
-=head2 Abstract Methods
+=head1 Abstract Methods
 
-=over
-
-=item B<init()>
+=method init()
 
 Is called once, on initialization of the class. Can be used to create needed
 initialization objects, like a database connection, etc.
 
-=item B<normalize($hashref)>
+=method normalize($hashref)
 
 Receives a hashref that contains the parameters keys/value. It should return a
 hashref (it can be the same), containing modified parameters.
 
-=back
-
-=head2 Inherited Methods
+=head1 Inherited Methods
 
 None for now.
-
-=head1 LICENCE
-
-This module is released under the same terms as Perl itself.
-
-=head1 AUTHORS
-
-This module has been written by Damien Krotkine <dams@cpan.org>.
 
 =head1 SEE ALSO
 

@@ -1,7 +1,8 @@
 use strict;
 use warnings;
-use lib qw(../lib);
+
 use Test::More;
+use Dancer::Test;
 
 {
 package My::Normalization1;
@@ -45,15 +46,12 @@ plan tests => 2;
 
 }
 
-use lib 't';
-use TestUtils;
-
 # 'testing' should be shortened to 'tes'
-my $response = get_response_for_request(GET => '/foo', { testing => 5 });
+my $response = dancer_response GET => '/foo', { params => {testing => 5 } };
 is($response->{content}, 5);
 
 # 'ABCLONGNAME' should be shortened to 'ABC'
-$response = get_response_for_request(GET => '/bar', { ABCLONGNAME => 6});
+$response = dancer_response GET => '/bar', { params => { ABCLONGNAME => 6 } };
 is($response->{content}, 6);
 
 

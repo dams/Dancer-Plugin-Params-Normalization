@@ -1,4 +1,5 @@
-
+{{$NEXT}}
+	* big cleanup, use dist zilla, fix tests.
 Version 0.1
 	* Support for lowercase, uppercase and generic transformation (via a closure)
 Version 0.2
