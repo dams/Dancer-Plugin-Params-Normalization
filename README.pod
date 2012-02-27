@@ -42,12 +42,12 @@ your main config.yml or environment config file.
     Params::Normalization:
       method: lowercase
 
-  # Example 1 : always uppercase all parameters
+  # Example 2 : always uppercase all parameters
   plugins:
     Params::Normalization:
       method: uppercase
 
-  # Example 1 : on-demand uppercase parameters that starts with 'a'
+  # Example 3 : on-demand uppercase parameters that starts with 'a'
   plugins:
     Params::Normalization:
       general_rule: ondemand
