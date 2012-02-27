@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.50      2012-02-27 13:17:28 Europe/Paris
 	* big cleanup, use dist zilla, fix tests.
 Version 0.1
 	* Support for lowercase, uppercase and generic transformation (via a closure)
