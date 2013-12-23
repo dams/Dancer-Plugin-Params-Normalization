@@ -18,11 +18,19 @@ if (defined $conf->{params_filter}) {
         return scalar($_[0] =~ /$re/) };
 }
 
+# set the trim_filter
+my $trim_filter = sub () { 1; };
+if !(defined $conf->{trim_filter} == '0')
+    $trim_filter = sub {
+        return scalar($_[0] =~ s/^\s+|\s+$//g) };
+}
+
 # method that loops on a hashref and apply a given method on its keys
 my $apply_on_keys = sub {
     my ($h, $func) = @_;
     my $new_h = {};
     while (my ($k, $v) = each (%$h)) {
+        $k = $trim_filter($k);
         my $new_k = $params_filter->($k) ? $func->($k) : $k;
         exists $new_h->{$new_k} && ! ($conf->{no_conflict_warn} || 0)
           and warn "paramater names conflict while doing normalization of parameters '$k' : it produces '$new_k', which alreay exists.";
