@@ -6,16 +6,16 @@ use warnings;
 
 use base 'Dancer::Plugin::Params::Normalization::Abstract';
 
-# set the trim_filter
-sub _trim_filter {
-    $_[0] =~ s/^\s+|\s+$//g;
-}
+#set the trim_filter
+my $trim_filter = sub {
+    return scalar($_[0] =~ s/^\s+|\s+$//g)
+};
 
 sub normalize {
     my ($self, $params) = @_;
-    $params = $self->_trim_filter($params) foreach keys %$params;
+    $trim_filter->($_) for values %$params;
     return $params;
-}
+    }
 
 1;
 
