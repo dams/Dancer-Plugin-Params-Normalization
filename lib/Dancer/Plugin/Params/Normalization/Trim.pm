@@ -15,7 +15,7 @@ sub normalize {
     my ($self, $params) = @_;
     $trim_filter->($_) for values %$params;
     return $params;
-    }
+}
 
 1;
 
@@ -29,6 +29,6 @@ Dancer::Plugin::Params::Normalization::Trim - normalization class for white spac
 
 =head1 DESCRIPTION
 
-#add me
+This subclass of Dancer::Plugin::Params::Normalization::Abstract removes whitespace from hash values.
 
 =cut
