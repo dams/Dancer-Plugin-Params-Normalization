@@ -215,6 +215,9 @@ C<normalize>. this method takes in argument a hashref of the parameters, and
 returns a hashrefs of the normalized parameters. It can have an C<init> method
 if it requires initialization.
 
+As an example, see C<Dancer::Plugin::Params::Normalization::Trim>, contributed
+by Sam Batschelet, and part of this distribution.
+
 Using a custom normalization is incompatible with C<params_filter> (see below).
 
 =item passthrough
