@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+        * merged Dancer::Plugin::Params::Normalization::Trim
+
 0.51      2012-02-27 13:43:41 Europe/Paris
 
 0.50      2012-02-27 13:17:28 Europe/Paris
